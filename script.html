@@ -1,0 +1,62 @@
+<template id="all-scripts">
+    <div>
+        <div v-for="group in scriptCategories">
+            <group-scripts :title="group.Title" :category="group.Category"></group-scripts>
+        </div>
+    </div>
+</template>
+
+<template id="group-scripts">
+    <div>
+        <h2>{{ title }}</h2>
+        <div v-for="entry in entries" v-if="entry.Visible && entry.Category === category">
+            <enabled-object :entry="entry"></enabled-object>
+        </div>
+    </div>
+</template>
+
+<template id="enabled-object">
+    <div>
+        <input type="checkbox" v-bind:checked="entry.Enabled" :name="entry.Name" v-on:click="addEntry" v-if="entry.Enabled != null"
+            :id="enabledID">
+        <label v-bind:for="[entry.Enabled != null ? enabledID : ValueID]">{{ entry.Text }}</label>
+        <input type="number" min="1" max="100" v-bind:value="entry.Value" :name="entry.Name" v-if="entry.Value"
+            :id="ValueID" v-on:change.stop="updateValue">
+    </div>
+</template>
+
+<template id="calculations">
+    <div>
+        <h3>Calculators:</h3>
+        <obs-calc></obs-calc>
+        <smr-calc></smr-calc>
+    </div>
+</template>
+
+<template id="obs-calc">
+    <div>
+        <h4>Observatory Starcharts</h4>
+        <p>
+            <strong>{{ charts.toLocaleString("en") }}</strong> per second</p>
+    </div>
+</template>
+
+<template id="smr-row">
+    <tr>
+        <td class="smrTitle" v-bind:style="strong">{{data.building}}</td>
+        <td class="smrValue">{{data.increase | toPercent }}</td>
+    </tr>
+</template>
+
+<template id="smr-calc">
+    <div>
+        <h4>Steam, Magneto, Reactor:</h4>
+        <table>
+            <tr>
+                <th>Building</th>
+                <th>Increase</th>
+            </tr>
+            <tr is="smr-row" v-if="data.enabled" v-for="data in smrData" v-bind:key="data.building" :data="data"></tr>
+        </table>
+    </div>
+</template>
